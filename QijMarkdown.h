@@ -18,7 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <QString>
-#include <QStringList>
+#include <QStringList> // includes QList
+#include <QUrl>
 
 class QijMarkdown
 {
@@ -28,6 +29,11 @@ class QijMarkdown
 
   private:
   QString myString;
+  QString emptyElementSuffix;
+  int tabWidth, listLevel;
+  QList<QUrl> urls;
+  QStringList titles;
+  QStringList htmlBlocks;
   void detab( QString & );
   void hashHTMLBlocks( QString & );
   void stripLinkDefinitions( QString & );
