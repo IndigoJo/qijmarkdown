@@ -55,7 +55,7 @@ class QijMarkdown
   void encodeAmpsAndAngles( QString & );
   void encodeBackslashEscapes( QString & );
   void doAutoLinks( QString & );
-  void encodeEmailAddress( QString & );
+  QString encodeEmailAddress( QString & );
   QChar encodeChar( QChar & );
   QStringList tokeniseHTML( QString & );
   void outdent( QString & );

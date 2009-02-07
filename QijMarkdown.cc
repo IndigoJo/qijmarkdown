@@ -166,6 +166,8 @@ QString QijMarkdown::encodeEmailAddress( QString &addr )
   outAddr = QString( "<a href=\"%1\">%1</a>" ).arg( outAddr );
   // Strip mailto: from visible part
   outAddr.replace( QRegExp( "\">.+?:" ), "\">" );
+
+  return outAddr;
 }
 
 QChar QijMarkdown::encodeChar( QChar &c, int type )
