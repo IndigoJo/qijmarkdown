@@ -97,3 +97,45 @@ void QijMarkdown::runSpanGamut( QString &thisString )
   thisString.replace( QRegExp( "{2,}\\n" ), QString( "<br%1\n" ).arg( emptyElementSuffix ) );
 }
 
+void QijMarkdown::doBlockQuotes( QString &thisString )
+{
+  int i;
+  QString thisPara;
+
+  // Strip leading & trailing lines
+  thisString.remove( QRegExp( "\\A\\n+" ) );
+  thisString.remove( QRegExp( "\\n+\\z" ) );
+
+  QStringList grafs = thisString.split( QRegExp( "\\n{2,}" ) );
+
+  // Wrap <p> tags
+  for( i = 0; i < grafs.count(); ++i ) {
+    if( !htmlBlocks.contains( grafs[i] ) ) {
+      runSpanGamut( grafs[i] );
+      grafs[i].replace( QRegExp( "^([ \\t]*)" ), "<p>" );
+      grafs[i].append( "<p>" );
+    }
+  }
+
+  // Unhashify HTML blocks
+/*  for( i = 0; i < grafs.count(); ++i ) {
+    if( htmlBlocks.contains( grafs[i] ) )
+       grafs[i] =  */
+}
+
+void QijMarkdown::encodeAmpsAndAngles( QString &thisString )
+{
+	/*Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+	  http://bumppo.net/projects/amputator/ */
+  thisString.replace( QRegExp( "&(?!#?[xX]?(?:[0-9a-fA-F]+|\\w+);" ), "&amp;" );
+
+	// Encode naked <'s
+ 	thisString.replace( QRegExp( "<(?![a-z/?\\$!])" ), "&lt;" );
+}
+
+void QijMarkdown::encodeBackslashEscapes( QString &thisString )
+{
+
+}
+
+
