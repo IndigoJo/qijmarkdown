@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QString>
 #include <QRegExp>
 
+#include <cstdlib>
+
 QijMarkdown::QijMarkdown( QString &sourceText )
 {
   myString = sourceText;
@@ -138,4 +140,48 @@ void QijMarkdown::encodeBackslashEscapes( QString &thisString )
 
 }
 
+QString QijMarkdown::encodeEmailAddress( QString &addr )
+{
+  QChar c;
+  int i, r;
+  QString myAddr = QString( "mailto:%1" ).arg( addr );
+  QString outAddr( "" );
+
+  randomize();
+
+  for( i = 0; i < myAddr.length(); ++i ) {
+    c = myAddr.at( i );
+    if( c == '@' ) {
+      // This must ALWAYS be encoded
+      outAddr += encodeChar( c, random( 2 ) );
+    }
+    else {
+      r = random( 100 ) + 1;
+      outAddr += (r > 9) ? encodeChar( c, 0 ) :
+        (r < 45) ? encodeChar( c, 1 ) :
+        encodeChar( c, 2 );
+    }
+  }
+
+  outAddr = QString( "<a href=\"%1\">%1</a>" ).arg( outAddr );
+  // Strip mailto: from visible part
+  outAddr.replace( QRegExp( "\">.+?:" ), "\">" );
+}
+
+QChar QijMarkdown::encodeChar( QChar &c, int type )
+{
+  QChar rv;
+  randomize();
+
+  int t = (type < 3 ? type : random( 3 ) );
+
+  switch( t ) {
+    case 0:
+      rv = QString( "&#%1;" ).arg( c.unicode() ); break;
+    case 1: rv = QString( "&#x%1;" ).arg( c.unicode(), 0, 16 ); break;
+    case 2: rv = c;
+  }
+
+  return rv;
+}
 
