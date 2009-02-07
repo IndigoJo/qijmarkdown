@@ -28,6 +28,14 @@ QijMarkdown::QijMarkdown( QString &sourceText )
   g_tab_width = 4;
   emptyElementSuffix = " />"; // Change to " >" for old HTML rather than XHTML
 
+  nestedBrackets = QRegExp( "(?>"
+                            "[^\[\]]+"
+                            "|"
+                            "\\["
+                            "(??{ $g_nested_brackets })" // ?!
+                            "\\]"
+                            ")*" );
+                            
   myString.replace( "\r\n", "\n" ); // DOS to Unix
   myString.replace( '\r', "\n" ); // Mac to Unix
 
@@ -81,22 +89,26 @@ void QijMarkdown::runBlockGamut( QString &thisString )
   formParagraphs( myString );
 }
 
-void QijMarkdown::runSpanGamut( QString &thisString )
+QString QijMarkdown::runSpanGamut( QString &thisString )
 {
-  doCodeSpans( thisString );
-  escapeSpecialChars( thisString );
-  doImages( thisString );
-  doAnchors( thisString );
+  QString rv = thisString;
+  
+  doCodeSpans( rv );
+  escapeSpecialChars( rv );
+  doImages( rv );
+  doAnchors( rv );
   
   // Make links out of things like `<http://example.com/>`
 	// Must come after _DoAnchors(), because you can use < and >
 	// delimiters in inline links like [this](<url>).
-  doAutoLinks( thisString );
-  encodeAmpsAndAngles( thisString );
-  doItalicsAndBold( thisString );
+  doAutoLinks( rv );
+  thisString = encodeAmpsAndAngles( rv );
+  doItalicsAndBold( rv );
 
   // Do hard breaks
-  thisString.replace( QRegExp( "{2,}\\n" ), QString( "<br%1\n" ).arg( emptyElementSuffix ) );
+  rv.replace( QRegExp( "{2,}\\n" ), QString( "<br%1\n" ).arg( emptyElementSuffix ) );
+
+  return rv;
 }
 
 void QijMarkdown::doBlockQuotes( QString &thisString )
@@ -125,7 +137,7 @@ void QijMarkdown::doBlockQuotes( QString &thisString )
        grafs[i] =  */
 }
 
-void QijMarkdown::encodeAmpsAndAngles( QString &thisString )
+QString QijMarkdown::encodeAmpsAndAngles( QString &thisString )
 {
 	/*Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
 	  http://bumppo.net/projects/amputator/ */
@@ -140,7 +152,7 @@ void QijMarkdown::encodeBackslashEscapes( QString &thisString )
 
 }
 
-QString QijMarkdown::encodeEmailAddress( QString &addr )
+static QString QijMarkdown::encodeEmailAddress( QString &addr )
 {
   QChar c;
   int i, r;

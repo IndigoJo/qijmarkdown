@@ -20,12 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QString>
 #include <QStringList> // includes QList
 #include <QUrl>
+#include <QRegExp>
 
 class QijMarkdown
 {
   public:
   QijMarkdown( QString & );
   QString toString();
+  static QString encodeEmailAddress( QString & );
+  static QString substitute( QString &, QRegExp &, QString & );
+  static QString substitute( QString &a, QString &b, QString &c ) {
+    return substitute( a, QRegExp( b ), c ); }
 
   private:
   QString myString;
@@ -39,7 +44,7 @@ class QijMarkdown
   void stripLinkDefinitions( QString & );
   void runBlockGamut( QString & );
   void unescapeSpecialChars( QString & );
-  void runSpanGamut( QString & );
+  QString runSpanGamut( QString & );
   void escapeSpecialChars( QString & );
   void doAnchors( QString & );
   void doImages( QString & );
@@ -52,13 +57,14 @@ class QijMarkdown
   void doItalicsAndBold( QString & );
   void doBlockQuotes( QString & );
   void formParagraphs( QString & );
-  void encodeAmpsAndAngles( QString & );
+  QString encodeAmpsAndAngles( QString & );
   void encodeBackslashEscapes( QString & );
   void doAutoLinks( QString & );
-  QString encodeEmailAddress( QString & );
   QChar encodeChar( QChar & );
   QStringList tokeniseHTML( QString & );
   void outdent( QString & );
+
+  QRegExp nestedBrackets;
 }
 
 static QString fromMarkdown( QString & );
